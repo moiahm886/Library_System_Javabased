@@ -1,0 +1,150 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
+
+public class IssueBook extends JFrame {
+    private JLabel BookID;
+    private JLabel UserID;
+    private JLabel period;
+    private JLabel IssuedDate;
+    private JTextField BookIDText;
+    private JTextField UserIDText;
+    private JTextField periodText;
+    private JTextField IssuedDateText;
+    public IssueBook()
+    {
+        setTitle("Add Books");
+        setSize(400, 300);
+        setResizable(false);
+        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.insets = new Insets(10, 10, 10, 10);
+
+        BookID = new JLabel("BookID");
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        panel.add(BookID, constraints);
+
+        BookIDText = new JTextField(10);
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        panel.add(BookIDText, constraints);
+
+        UserID = new JLabel("UserID");
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        panel.add(UserID, constraints);
+
+        UserIDText = new JTextField(10);
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        panel.add(UserIDText, constraints);
+
+        period = new JLabel("Period");
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        panel.add(period, constraints);
+
+        periodText = new JTextField(10);
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        panel.add(periodText, constraints);
+
+        IssuedDate = new JLabel("Issued Date");
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        panel.add(IssuedDate, constraints);
+
+        IssuedDateText = new JTextField(10);
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        panel.add(IssuedDateText, constraints);
+
+        JButton SubmitButton;
+        SubmitButton = new JButton("Submit");
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.WEST;
+        panel.add(SubmitButton, constraints);
+
+        JButton CancelButton;
+        CancelButton = new JButton("Cancel");
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.EAST;
+        panel.add(CancelButton, constraints);
+
+        add(panel);
+        setVisible(true);
+
+        SubmitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (BookIDText.getText().isEmpty() || UserIDText.getText().isEmpty() ||
+                        periodText.getText().isEmpty() || IssuedDateText.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please fill in all the fields.");
+                    return;
+                }
+                try{
+                    boolean found = false;
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/books","root","");
+                    String SQL = "SELECT * FROM viewbooks";
+                    Statement statement = conn.createStatement();
+                    ResultSet resultSet = statement.executeQuery(SQL);
+                    int bookId = Integer.parseInt(BookIDText.getText());
+                    System.out.println(bookId);
+                    while(resultSet.next())
+                    {
+                        int bid = resultSet.getInt("BID");
+                        System.out.println(bid);
+                        if(bid==bookId){
+                            found =true;
+                            String BookName = resultSet.getString(2);
+                            String Genre = resultSet.getString(3);
+                            Double price = resultSet.getDouble(4);
+                            SQL = "insert into issuedbooks values(?,?,?,?,?,?,?)";
+                            PreparedStatement ptst = conn.prepareCall(SQL);
+                            ptst.setInt(1,bid);
+                            ptst.setInt(2,Integer.parseInt(UserIDText.getText()));
+                            ptst.setInt(3,Integer.parseInt(periodText.getText()));
+                            ptst.setString(4,IssuedDateText.getText());
+                            ptst.setString(5,BookName);
+                            ptst.setString(6,Genre);
+                            ptst.setDouble(7,price);
+                            ptst.executeUpdate();
+                            SQL = "DELETE FROM viewbooks WHERE BID = " + bid;
+                            ptst = conn.prepareCall(SQL);
+                            ptst.executeUpdate();
+                        }
+                    }
+                    if(!found)
+                    {
+                        JOptionPane.showMessageDialog(null,"Book you want to issue not found");
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                } catch (ClassNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        CancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+
+    }
+}
