@@ -130,6 +130,16 @@ public class HomePage extends JFrame {
                 RB.setVisible(true);
             }
         });
-    }
 
+    }
+    public void checkDetails(String username,String password)
+    {
+        if(!username.equals("admin")&&!password.equals("admin")){
+            AddBook.setEnabled(false);
+            AddUser.setEnabled(false);
+            CreateReset.setEnabled(false);
+            dispose();
+        }
+
+    }
 }

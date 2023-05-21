@@ -26,6 +26,7 @@ public class LoginDAO implements Login {
                 if(getName.equals(username)&&getPWD.equals(password)){
                     found = true;
                     HomePage HP = new HomePage();
+                    HP.checkDetails(getName,getPWD);
                     HP.setVisible(true);
                     login.dispose();
                     break;
