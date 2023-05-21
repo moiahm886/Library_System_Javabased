@@ -59,7 +59,6 @@ public class AddUsersDAO implements user {
             preparedStatement.setBoolean(4, isAdmin);
             preparedStatement.executeUpdate();
             conn.close();
-
             JOptionPane.showMessageDialog(null, "User added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (ClassNotFoundException | SQLException ex) {
             ex.printStackTrace();

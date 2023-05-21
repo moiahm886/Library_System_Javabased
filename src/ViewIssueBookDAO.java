@@ -1,10 +1,10 @@
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 
-interface issueBookDAO{
+interface issueBK{
     void getTable(DefaultTableModel tableModel);
 }
-public class ViewIssueBookDAO implements issueBookDAO {
+public class ViewIssueBookDAO implements issueBK {
     @Override
     public void getTable(DefaultTableModel tableModel) {
         try {

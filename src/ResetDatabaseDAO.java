@@ -3,12 +3,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-interface resetDatabase{
+interface resetDB{
     void resetBooks();
     void resetUsers();
     void issued();
 }
-public class ResetDatabaseDAO implements resetDatabase {
+public class ResetDatabaseDAO implements resetDB{
     @Override
     public void resetBooks() {
         try {

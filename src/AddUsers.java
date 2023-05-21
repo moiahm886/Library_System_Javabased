@@ -74,6 +74,10 @@ public class AddUsers extends JFrame {
                 String confirmPassword = String.valueOf(pwdConfirmText.getPassword());
                 AddUsersDAO AUD = new AddUsersDAO();
                 AUD.insertUser(username,password,confirmPassword);
+                dispose();
+                userNameText.setText("");
+                pwdText.setText("");
+                pwdConfirmText.setText("");
             }
         });
 

@@ -88,6 +88,10 @@ public class AddBooks extends JFrame {
                 int Row=0;
                 AddBooksDAO ABD = new AddBooksDAO();
                 ABD.insertBook(Row,Books,Genre,Price);
+                dispose();
+                book.setText("");
+                genre.setText("");
+                price.setText("");
             }
         });
         CancelButton.addActionListener(new ActionListener() {
