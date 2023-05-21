@@ -32,30 +32,8 @@ public class ViewBooks extends JFrame {
     }
 
     public void fetchData() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/books", "root", "");
-            String SQL = "SELECT * FROM viewbooks";
-            PreparedStatement ptst = conn.prepareStatement(SQL);
-            ResultSet resultSet = ptst.executeQuery();
-
-            while (resultSet.next()) {
-                int bid = resultSet.getInt("BID");
-                String bname = resultSet.getString("BNAME");
-                String genre = resultSet.getString("GENRE");
-                double price = resultSet.getDouble("PRICE");
-
-                tableModel.addRow(new Object[]{bid, bname, genre, price});
-            }
-
-            resultSet.close();
-            ptst.close();
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+       ViewBookDao VBD = new ViewBookDao();
+       VBD.getTable(tableModel);
     }
 
 }
