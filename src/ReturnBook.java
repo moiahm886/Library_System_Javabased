@@ -35,18 +35,8 @@ public class ReturnBook extends JFrame {
         returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow != -1) {
-                    int bid = (int) table.getValueAt(selectedRow, 0);
-                    String BookName = (String) table.getValueAt(selectedRow,4);
-                    String Genre = (String) table.getValueAt(selectedRow,5);
-                    Double Price = (Double) table.getValueAt(selectedRow,6);
-                    deleteRow(bid,BookName,Genre,Price);
-                    tableModel.removeRow(selectedRow);
-                    JOptionPane.showMessageDialog(ReturnBook.this, "Book with BID: " + bid + " returned and deleted.");
-                } else {
-                    JOptionPane.showMessageDialog(ReturnBook.this, "Please select a row to return the book.");
-                }
+                ReturnBookDAO RBD = new ReturnBookDAO();
+                RBD.Return(table,tableModel);
             }
         });
 
@@ -64,54 +54,12 @@ public class ReturnBook extends JFrame {
     }
 
     public void fetchData() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/books", "root", "");
-            String SQL = "SELECT * FROM issuedbooks";
-            PreparedStatement ptst = conn.prepareStatement(SQL);
-            ResultSet resultSet = ptst.executeQuery();
-
-            while (resultSet.next()) {
-                int UID = resultSet.getInt("UID");
-                int bid = resultSet.getInt("BID");
-                String bName = resultSet.getString("Book Name");
-                String genre = resultSet.getString("Genre");
-                double price = resultSet.getDouble("Price");
-                int period = resultSet.getInt("Period");
-                String DateIssued = resultSet.getString("Date Issued");
-
-                tableModel.addRow(new Object[]{bid, UID, period, DateIssued, bName, genre, price});
-            }
-            resultSet.close();
-            ptst.close();
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        ReturnBookDAO RBD = new ReturnBookDAO();
+        RBD.getTable(tableModel);
     }
 
-    public void deleteRow(int bid,String BookName, String Genre, Double Price) {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/books", "root", "");
-            String SQL = "DELETE FROM issuedbooks WHERE BID = "+ bid;
-            PreparedStatement ptst = conn.prepareStatement(SQL);
-            ptst.executeUpdate();
-            SQL = "insert into viewbooks values(?,?,?,?)";
-            ptst = conn.prepareCall(SQL);
-            ptst.setInt(1,bid);
-            ptst.setString(2, BookName);
-            ptst.setString(3, Genre);
-            ptst.setDouble(4,  Price);
-            ptst.executeUpdate();
-            ptst.close();
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    public void addRow(int bid,String BookName, String Genre, Double Price) {
+        ReturnBookDAO RBD = new ReturnBookDAO();
+        RBD.RowAdd(bid,BookName,Genre,Price);
     }
 }
