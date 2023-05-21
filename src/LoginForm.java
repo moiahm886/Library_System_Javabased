@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.*;
 
 public class LoginForm extends JFrame {
     private JTextField usernameField;
@@ -54,53 +53,18 @@ public class LoginForm extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    boolean found = false;
-                    String username = usernameField.getText();
-                    String password = new String(passwordField.getPassword());
-                    if(!password.equals("admin")) {
-                        password = hashPassword(password);
-                    }
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/books", "root", "");
-                    String SQL = "SELECT * FROM users";
-                    PreparedStatement ptst = conn.prepareStatement(SQL);
-                    ResultSet resultSet = ptst.executeQuery();
-
-                    while (resultSet.next()) {
-                        String getName = resultSet.getString("User Name");
-                        String getPWD = resultSet.getString("Password");
-                        if(getName.equals(username)&&getPWD.equals(password)){
-                            found = true;
-                            HomePage HP = new HomePage();
-                            HP.setVisible(true);
-                            dispose();
-                            break;
-                        }
-                    }
-                    if(username.equals("admin")&&password.equals("admin"))
-                    {
-                        found = true;
-                        HomePage HP = new HomePage();
-                        HP.setVisible(true);
-                        dispose();
-                    }
-                    if(!found)
-                    {
-                        JOptionPane.showMessageDialog(null,"Incorrect User Name or Password. Please Try Again");
-                    }
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                } catch (ClassNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                }
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+                LoginDAO login = new LoginDAO();
+                login.getUserNameAndPassword(username, password);
+                dispose();
             }
         });
 
         add(panel);
         setVisible(true);
     }
-    private String hashPassword(String password) {
+    public String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = md.digest(password.getBytes());
