@@ -11,6 +11,7 @@ public class ResetDatabase extends JFrame {
     private JButton resetViewBook;
     private JButton resetViewUser;
     private JButton resetIssuedBooks;
+    private int choice;
 
     public ResetDatabase()
     {
@@ -47,22 +48,41 @@ public class ResetDatabase extends JFrame {
         resetViewBook.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Reset.resetBooks();
+                confirmation();
+                if(choice==JOptionPane.YES_OPTION) {
+                    Reset.resetBooks();
+                }
             }
         });
         resetViewUser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Reset.resetUsers();
+                confirmation();
+                if(choice==JOptionPane.YES_OPTION) {
+                    Reset.resetUsers();
+                }
             }
         });
         resetIssuedBooks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Reset.issued();
+                confirmation();
+                if(choice==JOptionPane.YES_OPTION) {
+                    Reset.issued();
+                }
             }
         });
 
     }
-
+    public void confirmation()
+    {
+            choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to reset the database?", "Confirmation", JOptionPane.YES_NO_OPTION);
+            if(choice==JOptionPane.NO_OPTION)
+            {
+                Window window = SwingUtilities.getWindowAncestor(JOptionPane.getRootFrame());
+                if (window != null) {
+                    window.dispose();
+                }
+            }
+    }
 }
