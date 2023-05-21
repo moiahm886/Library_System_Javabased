@@ -31,28 +31,7 @@ public class ViewUsers extends JFrame {
     }
 
     public void fetchData() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/books", "root", "");
-            String SQL = "SELECT * FROM users";
-            PreparedStatement ptst = conn.prepareStatement(SQL);
-            ResultSet resultSet = ptst.executeQuery();
-
-            while (resultSet.next()) {
-                int uid = resultSet.getInt("UID");
-                String UserName = resultSet.getString("User Name");
-                boolean Admin = resultSet.getBoolean("Admin");
-
-                tableModel.addRow(new Object[]{uid, UserName, Admin});
-            }
-
-            resultSet.close();
-            ptst.close();
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        ViewUserDAO VUD = new ViewUserDAO();
+        VUD.getTable(tableModel);
     }
 }
