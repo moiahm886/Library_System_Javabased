@@ -89,53 +89,12 @@ public class IssueBook extends JFrame {
         SubmitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (BookIDText.getText().isEmpty() || UserIDText.getText().isEmpty() ||
-                        periodText.getText().isEmpty() || IssuedDateText.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Please fill in all the fields.");
-                    return;
-                }
-                try{
-                    boolean found = false;
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/books","root","");
-                    String SQL = "SELECT * FROM viewbooks";
-                    Statement statement = conn.createStatement();
-                    ResultSet resultSet = statement.executeQuery(SQL);
-                    int bookId = Integer.parseInt(BookIDText.getText());
-                    System.out.println(bookId);
-                    while(resultSet.next())
-                    {
-                        int bid = resultSet.getInt("BID");
-                        System.out.println(bid);
-                        if(bid==bookId){
-                            found =true;
-                            String BookName = resultSet.getString(2);
-                            String Genre = resultSet.getString(3);
-                            Double price = resultSet.getDouble(4);
-                            SQL = "insert into issuedbooks values(?,?,?,?,?,?,?)";
-                            PreparedStatement ptst = conn.prepareCall(SQL);
-                            ptst.setInt(1,bid);
-                            ptst.setInt(2,Integer.parseInt(UserIDText.getText()));
-                            ptst.setInt(3,Integer.parseInt(periodText.getText()));
-                            ptst.setString(4,IssuedDateText.getText());
-                            ptst.setString(5,BookName);
-                            ptst.setString(6,Genre);
-                            ptst.setDouble(7,price);
-                            ptst.executeUpdate();
-                            SQL = "DELETE FROM viewbooks WHERE BID = " + bid;
-                            ptst = conn.prepareCall(SQL);
-                            ptst.executeUpdate();
-                        }
-                    }
-                    if(!found)
-                    {
-                        JOptionPane.showMessageDialog(null,"Book you want to issue not found");
-                    }
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                } catch (ClassNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                }
+                String Book = BookIDText.getText();
+                String User = UserIDText.getText();
+                String Period = periodText.getText();
+                String IssuedDate = IssuedDateText.getText();
+                IssueBookDAO IBD = new IssueBookDAO();
+                IBD.bookIssue(Book,User,Period,IssuedDate);
             }
         });
 

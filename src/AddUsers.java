@@ -72,64 +72,8 @@ public class AddUsers extends JFrame {
                 String username = userNameText.getText();
                 String password = String.valueOf(pwdText.getPassword());
                 String confirmPassword = String.valueOf(pwdConfirmText.getPassword());
-
-                if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                    JOptionPane.showMessageDialog(AddUsers.this,
-                            "Please enter a value in all the fields.",
-                            "Validation Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                if (!password.equals(confirmPassword)) {
-                    JOptionPane.showMessageDialog(AddUsers.this,
-                            "Passwords do not match.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                String hashedPassword = hashPassword(password);
-
-                try {
-                    int rows = 0;
-                    boolean isAdmin = false;
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/books", "root", "");
-                    String query = "SELECT MAX(UID) AS total_rows FROM users";
-                    Statement statement = conn.createStatement();
-                    ResultSet resultSet = statement.executeQuery(query);
-                    if (resultSet.next()) {
-                        rows = resultSet.getInt("total_rows");
-                    }
-                    if (username.equals("admin")) {
-                        isAdmin = true;
-                    }
-                    query = "SELECT * FROM users";
-                    statement = conn.createStatement();
-                    resultSet = statement.executeQuery(query);
-                    while (resultSet.next())
-                    {
-                        String User = resultSet.getString("User Name");
-                        if(User.equals(username))
-                        {
-                            JOptionPane.showMessageDialog(AddUsers.this,"User Already Exists","Error",JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    }
-                    query = "INSERT INTO users VALUES (?, ?, ?, ?)";
-                    PreparedStatement preparedStatement = conn.prepareCall(query);
-                    preparedStatement.setInt(1, rows + 1);
-                    preparedStatement.setString(2, username);
-                    preparedStatement.setString(3, hashedPassword);
-                    preparedStatement.setBoolean(4, isAdmin);
-                    preparedStatement.executeUpdate();
-                    conn.close();
-
-                    JOptionPane.showMessageDialog(AddUsers.this, "User added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                } catch (ClassNotFoundException | SQLException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(AddUsers.this, "An error occurred while adding the user.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+                AddUsersDAO AUD = new AddUsersDAO();
+                AUD.insertUser(username,password,confirmPassword);
             }
         });
 
@@ -141,7 +85,7 @@ public class AddUsers extends JFrame {
         });
     }
 
-    private String hashPassword(String password) {
+    public String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = md.digest(password.getBytes());
