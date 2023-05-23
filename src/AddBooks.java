@@ -13,6 +13,7 @@ public class AddBooks extends JFrame {
     private JTextField price;
 
     public AddBooks() {
+        System.out.println("Hello");
         setTitle("Add Books");
         setSize(400, 300);
         setResizable(false);
